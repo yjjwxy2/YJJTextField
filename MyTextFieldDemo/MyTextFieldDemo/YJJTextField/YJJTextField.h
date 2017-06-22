@@ -41,6 +41,8 @@
 @property (nonatomic,strong) UIColor *lineSelectedColor;
 /** 底部线条错误警告颜色(默认红色) */
 @property (nonatomic,strong) UIColor *lineWarningColor;
+/** 是否需要显示历史记录列表(默认YES) */
+@property (nonatomic,assign) BOOL showHistoryList;
 
 
 /**

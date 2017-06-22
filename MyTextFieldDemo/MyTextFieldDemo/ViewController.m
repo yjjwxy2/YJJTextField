@@ -43,6 +43,7 @@
     passwordField.placeholder = @"请输入密码";
     passwordField.historyContentKey = @"password";
     passwordField.leftImageName = @"password_login";
+    passwordField.showHistoryList = NO;
     [self.view addSubview:passwordField];
     
     self.textFieldArr = @[userNameField,passwordField];

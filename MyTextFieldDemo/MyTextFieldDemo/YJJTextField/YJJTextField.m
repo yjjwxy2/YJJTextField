@@ -7,10 +7,11 @@
 //
 
 #import "YJJTextField.h"
+#import "HistoryContentCell.h"
 
 #define YJJ_Color(r,g,b) [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:1.0]
 const static CGFloat margin = 10.0;
-const static CGFloat tableViewH = 80.0;
+const static CGFloat tableViewH = 100.0;
 const static CGFloat animateDuration = 0.5;
 
 @interface YJJTextField ()<UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate>
@@ -47,7 +48,9 @@ const static CGFloat animateDuration = 0.5;
         _tableView.delegate = self;
         _tableView.alpha = 0.0;
         _tableView.layer.borderWidth = 1.0;
-        _tableView.layer.borderColor = YJJ_Color(233, 233, 233).CGColor;
+        _tableView.layer.borderColor = YJJ_Color(220, 220, 220).CGColor;
+        _tableView.layer.cornerRadius = 5.0;
+        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     }
     return _tableView;
 }
@@ -64,6 +67,8 @@ const static CGFloat animateDuration = 0.5;
     self.lineDefaultColor = YJJ_Color(220, 220, 220);
     self.lineSelectedColor = YJJ_Color(1, 183, 164);
     self.lineWarningColor = YJJ_Color(252, 57, 24);
+    
+    self.showHistoryList = YES;
 }
 
 
@@ -157,17 +162,24 @@ const static CGFloat animateDuration = 0.5;
     
     [self loadHistoryContentWithKey:self.historyContentKey];
     
-    if (self.historyContentArr.count != 0) {
+    if (self.historyContentArr.count != 0 && self.showHistoryList) {
         CGFloat y = CGRectGetMaxY(self.frame);
         [self showTheHistoryContentTableView:y];
     }
 }
+
+- (BOOL)textFieldShouldEndEditing:(UITextField *)textField
+{
+    [self setPlaceHolderLabelHidden:YES];
+    [self dismissTheHistoryContentTableView];
+    return YES;
+}
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [self endEditing:YES];
     
     [self setPlaceHolderLabelHidden:YES];
-    
     [self dismissTheHistoryContentTableView];
     
     return YES;
@@ -180,16 +192,9 @@ const static CGFloat animateDuration = 0.5;
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *ID = @"history";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
+    HistoryContentCell *cell = [HistoryContentCell cellWithTableView:tableView];
     
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
-        cell.textLabel.textColor = [UIColor darkGrayColor];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    }
-    
-    cell.textLabel.text = self.historyContentArr[indexPath.row];
+    cell.contentLabel.text = self.historyContentArr[indexPath.row];
     
     return cell;
 }
