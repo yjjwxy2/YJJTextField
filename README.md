@@ -9,6 +9,7 @@
 ![image](https://github.com/yjjwxy2/YJJTextField/blob/master/gif/yjjtextfield.gif)
 
 ## 使用
+1. 创建
 ```objc
     YJJTextField *textField = [YJJTextField yjj_textField];
     textField.frame = CGRectMake(0, 60, self.view.frame.size.width, 80);
@@ -17,6 +18,43 @@
     textField.placeholder = @"请输入用户名";
     textField.historyContentKey = @"userName";
     [self.view addSubview:textField];
+```
+2. 保存历史记录(如果需要)
+```objc
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSMutableDictionary *originalDic = [defaults objectForKey:@"historyContent"];
+    if (originalDic == nil) {  // 如果系统中没有记录
+        NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithCapacity:0];
+        for (YJJTextField *textField in self.textFieldArr) {
+            // 用数组存放输入的内容，并作为保存字典的Value，Key为用户在创建时自己指定
+            NSArray *array = [NSArray arrayWithObject:textField.textField.text];
+            [dic setObject:array forKey:textField.historyContentKey];
+        }
+        [defaults setObject:dic forKey:@"historyContent"];
+    }else{
+        __block NSMutableDictionary *newDic = [NSMutableDictionary dictionaryWithCapacity:0];
+        for (YJJTextField *textField in self.textFieldArr) {
+            // 遍历所有TextField，取出当前文本框的Key和内容
+            NSString *currentKey = textField.historyContentKey;
+            NSString *currentText = textField.textField.text;
+            
+            __block NSMutableArray *contentArray;
+            
+            // 遍历已经存在的记录
+            [originalDic enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSArray *obj, BOOL * _Nonnull stop) {
+                contentArray = [NSMutableArray arrayWithArray:obj];
+                if ([key isEqualToString:currentKey]) {  // 如果当前Key和字典中的Key相同，则添加Value
+                    [contentArray addObject:currentText];
+                    // 去除重复的记录
+                    NSSet *set = [NSSet setWithArray:contentArray];
+                    contentArray = (NSMutableArray *)set.allObjects;
+                    [newDic setObject:contentArray forKey:currentKey];
+                    *stop = YES;
+                }
+            }];
+        }
+        [defaults setObject:newDic forKey:@"historyContent"];
+    }
 ```
 
 ## 反馈
