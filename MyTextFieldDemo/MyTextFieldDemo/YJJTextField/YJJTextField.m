@@ -103,6 +103,7 @@ const static CGFloat animateDuration = 0.5;
     self.window.backgroundColor = [UIColor clearColor];
     [self.window addSubview:self.tableView];
     self.tableView.frame = CGRectMake(margin, y, self.frame.size.width-margin*2, tableViewH);
+    [self.tableView reloadData];
     
     [UIView animateWithDuration:animateDuration animations:^{
         self.tableView.alpha = 1.0;
